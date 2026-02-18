@@ -111,6 +111,19 @@ GitHub Actions automatically builds and runs tests on push.
 
 ------------------------------------------------------------------------
 
+## Future Improvements
+
+- JWT-based authentication and role-based authorization
+- Docker containerization for backend and frontend
+- Production cost calculation (raw material cost vs. product margin)
+- Export production plan to PDF or Excel
+- Pagination and filtering for large datasets
+- Frontend unit tests (Angular TestBed / Jasmine)
+- Global HTTP interceptor for error handling
+- Dashboard with stock and production KPIs
+
+------------------------------------------------------------------------
+
 ## Author
 
 Antonio Marcelo\

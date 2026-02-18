@@ -20,7 +20,8 @@ export class ProductsListComponent implements OnInit {
   deleteError: string | null = null;
   selected: Product | null = null;
 
-  constructor(private svc: ProductsService, private router: Router) {}
+  constructor(private svc: ProductsService,
+    private router: Router) {}
 
   ngOnInit(): void {
     this.load();

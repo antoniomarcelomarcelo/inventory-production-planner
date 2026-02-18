@@ -5,6 +5,7 @@ import { ProductsService } from '../../../core/services/products.service';
 import { RawMaterialsService } from '../../../core/services/raw-materials.service';
 import { RawMaterial } from '../../../models/raw-material.model';
 import { UpdateBomRequest } from '../../../models/bom.model';
+import { ToastService } from 'src/app/core/services/toast.service';
 
 @Component({
   selector: 'app-product-form',
@@ -37,7 +38,8 @@ export class ProductFormComponent implements OnInit {
     private products: ProductsService,
     private rawMaterialsSvc: RawMaterialsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -60,7 +62,7 @@ export class ProductFormComponent implements OnInit {
         }
       },
       error: (err) => {
-        alert(err?.message ?? 'Failed to load raw materials');
+        this.toast.show(err?.message ?? 'Failed to load raw materials', 'error');
         this.loading = false;
       },
     });
@@ -137,42 +139,45 @@ export class ProductFormComponent implements OnInit {
       })),
     };
 
-    const done = () => {
+    const done = (message: string) => {
       this.saving = false;
+      this.toast.show(message, 'success');
       this.router.navigate(['/products']);
     };
 
     if (!this.isEdit) {
-      // create then update BOM
-      this.products.create({ code: productPayload.code, name: productPayload.name, price: productPayload.price } as any).subscribe({
-        next: (created) => {
-          this.products.updateBom(created.id, bomPayload).subscribe({
-            next: () => done(),
-            error: (err) => {
-              alert(err?.message ?? 'Failed to save BOM');
-              done();
-            },
-          });
-        },
-        error: (err) => {
-          alert(err?.message ?? 'Failed to create product');
-          this.saving = false;
-        },
-      });
-    } else {
+  this.products
+    .create({ code: productPayload.code, name: productPayload.name, price: productPayload.price } as any)
+    .subscribe({
+      next: (created) => {
+        this.products.updateBom(created.id, bomPayload).subscribe({
+          next: () => done('Product created successfully'),
+          error: (err) => {
+            this.toast.show(err?.message ?? 'Failed to save BOM', 'error');
+            this.saving = false;
+          },
+        });
+      },
+      error: (err) => {
+        this.toast.show(err?.message ?? 'Failed to create product', 'error');
+        this.saving = false;
+      },
+    });
+  }
+ else {
       const id = productPayload.id;
       this.products.update(id, productPayload as any).subscribe({
         next: () => {
           this.products.updateBom(id, bomPayload).subscribe({
-            next: () => done(),
+            next: () => done('Product updated successfully'),
             error: (err) => {
-              alert(err?.message ?? 'Failed to save BOM');
-              done();
+              this.toast.show(err?.message ?? 'Failed to save BOM', 'error');
+              this.saving = false;
             },
           });
         },
         error: (err) => {
-          alert(err?.message ?? 'Failed to update product');
+          this.toast.show(err?.message ?? 'Failed to update product', 'error');
           this.saving = false;
         },
       });

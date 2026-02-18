@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RawMaterialsService } from '../../../core/services/raw-materials.service';
 import { RawMaterial } from '../../../models/raw-material.model';
+import { ToastService } from 'src/app/core/services/toast.service';
 
 @Component({
   selector: 'app-raw-material-form',
@@ -27,7 +28,8 @@ export class RawMaterialFormComponent implements OnInit {
     private fb: FormBuilder,
     private svc: RawMaterialsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -49,7 +51,7 @@ export class RawMaterialFormComponent implements OnInit {
           this.loading = false;
         },
         error: (err) => {
-          alert(err?.message ?? 'Raw material not found');
+          this.toast.show(err?.message ?? 'Raw material not found', 'error');
           this.router.navigate(['/raw-materials']);
         },
       });
@@ -73,24 +75,32 @@ export class RawMaterialFormComponent implements OnInit {
       stockQuantity: Number(this.form.value.stockQuantity),
     };
 
-    const done = () => {
+    const done = (message: string) => {
       this.saving = false;
+      this.toast.show(message, 'success');
       this.router.navigate(['/raw-materials']);
     };
 
     if (!this.isEdit) {
-      this.svc.create({ code: payload.code, name: payload.name, stockQuantity: payload.stockQuantity } as any).subscribe({
-        next: () => done(),
-        error: (err) => {
-          alert(err?.message ?? 'Failed to create raw material');
-          this.saving = false;
-        },
-      });
-    } else {
+      this.svc
+        .create({
+          code: payload.code,
+          name: payload.name,
+          stockQuantity: payload.stockQuantity
+        } as any)
+        .subscribe({
+          next: () => done('Raw material created successfully'),
+          error: (err) => {
+            this.toast.show(err?.message ?? 'Failed to create raw material', 'error');
+            this.saving = false;
+          },
+        });
+    }
+    else {
       this.svc.update(payload.id, payload).subscribe({
-        next: () => done(),
+        next: () => done('Raw material updated successfully'),
         error: (err) => {
-          alert(err?.message ?? 'Failed to update raw material');
+          this.toast.show(err?.message ?? 'Failed to update raw material', 'error');
           this.saving = false;
         },
       });
