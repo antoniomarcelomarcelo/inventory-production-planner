@@ -14,6 +14,12 @@ export class RawMaterialsListComponent implements OnInit {
   error: string | null = null;
   items: RawMaterial[] = [];
 
+  // Delete confirmation modal state
+  deleteModalOpen = false;
+  deleting = false;
+  deleteError: string | null = null;
+  selected: RawMaterial | null = null;
+
   constructor(private svc: RawMaterialsService, private router: Router) {}
 
   ngOnInit(): void {
@@ -44,12 +50,35 @@ export class RawMaterialsListComponent implements OnInit {
     this.router.navigate(['/raw-materials', id, 'edit']);
   }
 
-  remove(id: number): void {
-    if (!confirm('Delete this raw material?')) return;
+  openDelete(item: RawMaterial): void {
+    this.selected = item;
+    this.deleteError = null;
+    this.deleteModalOpen = true;
+  }
 
-    this.svc.delete(id).subscribe({
-      next: () => this.load(),
-      error: (err) => alert(err?.message ?? 'Failed to delete'),
+  closeDeleteModal(): void {
+    if (this.deleting) return;
+    this.deleteModalOpen = false;
+    this.selected = null;
+    this.deleteError = null;
+  }
+
+  confirmDelete(): void {
+    if (!this.selected || this.deleting) return;
+
+    this.deleting = true;
+    this.deleteError = null;
+
+    this.svc.delete(this.selected.id).subscribe({
+      next: () => {
+        this.deleting = false;
+        this.closeDeleteModal();
+        this.load();
+      },
+      error: (err) => {
+        this.deleting = false;
+        this.deleteError = err?.message ?? 'Failed to delete';
+      },
     });
   }
 }
