@@ -1,0 +1,67 @@
+<div class="card">
+  <div class="card-body">
+
+    <h3 class="card-title mb-4">
+      {{ isEdit ? 'Edit Raw Material' : 'New Raw Material' }}
+    </h3>
+
+    <div *ngIf="loading" class="alert alert-info">
+      Loading...
+    </div>
+
+    <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="save()">
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Code</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="code"
+            [class.is-invalid]="form.get('code')?.invalid && form.get('code')?.touched"
+          />
+          <div class="invalid-feedback">
+            Code is required
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Name</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="name"
+            [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+          />
+          <div class="invalid-feedback">
+            Name is required
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Stock Quantity</label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="stockQuantity"
+            [class.is-invalid]="form.get('stockQuantity')?.invalid && form.get('stockQuantity')?.touched"
+          />
+          <div class="invalid-feedback">
+            Must be greater than or equal to zero
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="btn btn-success me-2" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save' }}
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancel()">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<div class="card">
+  <div class="card-body">
+    <h3 class="card-title mb-4">
+      {{ isEdit ? 'Edit Product' : 'New Product' }}
+    </h3>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Code</label>
+          <input type="text" class="form-control" formControlName="code" />
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-control" formControlName="name" />
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Price</label>
+          <input type="number" class="form-control" formControlName="price" />
+        </div>
+      </div>
+
+      <hr />
+
+      <h5>Bill of Materials</h5>
+
+      <div formArrayName="bom">
+        <div
+          *ngFor="let row of bom.controls; let i = index"
+          [formGroupName]="i"
+          class="row mb-2 align-items-center"
+        >
+          <div class="col-md-5">
+            <select class="form-select" formControlName="rawMaterialId">
+              <option [ngValue]="null">Select raw material</option>
+              <option *ngFor="let rm of rawMaterials" [ngValue]="rm.id">
+                {{ rm.code }} - {{ rm.name }} (Stock: {{ rm.stockQuantity }})
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <input type="number" class="form-control" formControlName="quantityPerUnit" />
+          </div>
+
+          <div class="col-md-2">
+            <button
+              type="button"
+              class="btn btn-outline-danger w-100"
+              (click)="removeBomRow(i)"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-outline-primary mb-3" (click)="addBomRow()">
+        Add BOM Item
+      </button>
+
+
+      <div>
+        <button type="submit" class="btn btn-success me-2">Save</button>
+        <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+      </div>
+
+    </form>
+  </div>
+</div>

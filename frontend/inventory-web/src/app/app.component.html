@@ -1,0 +1,15 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">Inventory</a>
+
+    <div class="navbar-nav">
+      <a class="nav-link" routerLink="/production-plan" routerLinkActive="active">Production Plan</a>
+      <a class="nav-link" routerLink="/products" routerLinkActive="active">Products</a>
+      <a class="nav-link" routerLink="/raw-materials" routerLinkActive="active">Raw Materials</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-3">
+  <router-outlet></router-outlet>
+</div>
